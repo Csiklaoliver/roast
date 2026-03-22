@@ -3,939 +3,707 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ROAST MY REPO 🔥</title>
+  <title>Roast My Repo 🔥</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --red: #ff3333;
-      --bg: #0a0a0a;
-      --fg: #ffffff;
-      --dim: #666666;
-      --card-bg: #111111;
-      --border: #222222;
+      --bg:       #07070f;
+      --surface:  #0f0f1a;
+      --surface2: #16162a;
+      --border:   rgba(255,255,255,0.07);
+      --fg:       #ffffff;
+      --muted:    rgba(255,255,255,0.45);
+      --fire:     #ff6b35;
+      --fire2:    #ff9f1c;
+      --glow:     rgba(255,107,53,0.25);
+      --green:    #4ade80;
+      --radius:   18px;
+      --radius-sm:10px;
     }
+
+    html { scroll-behavior: smooth; }
 
     body {
       background: var(--bg);
       color: var(--fg);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Nunito', sans-serif;
       min-height: 100vh;
-      line-height: 1.6;
+      overflow-x: hidden;
     }
 
-    /* ── HEADER ── */
-    header {
-      border-bottom: 3px solid var(--red);
-      padding: 12px 24px;
+    /* ── ambient orbs ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-a { width: 520px; height: 520px; background: rgba(255,107,53,0.18); top: -160px; right: -140px; animation: orbA 10s ease-in-out infinite; }
+    .orb-b { width: 400px; height: 400px; background: rgba(124,58,237,0.15); bottom: -120px; left: -100px; animation: orbB 13s ease-in-out infinite; }
+    @keyframes orbA { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-40px,30px)} }
+    @keyframes orbB { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,-25px)} }
+
+    /* ── layout ── */
+    .wrap { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; padding: 0 20px; }
+
+    /* ── nav ── */
+    nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      padding: 22px 32px;
+      position: relative;
+      z-index: 1;
+    }
+    .nav-logo {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.5rem;
+      background: linear-gradient(135deg, var(--fire), var(--fire2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-tag {
+      font-size: 0.75rem;
+      color: var(--muted);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 5px 14px;
+      border-radius: 99px;
+      font-weight: 700;
     }
 
-    header .logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.8rem;
-      color: var(--red);
-      letter-spacing: 2px;
-    }
-
-    header .tag {
-      font-size: 0.7rem;
-      color: var(--dim);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    /* ── HERO ── */
+    /* ── hero ── */
     .hero {
       text-align: center;
-      padding: 64px 24px 40px;
-      max-width: 800px;
-      margin: 0 auto;
+      padding: 52px 24px 40px;
     }
-
-    .hero h1 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(3rem, 10vw, 7rem);
-      line-height: 0.95;
-      color: var(--fg);
-      letter-spacing: 3px;
-    }
-
-    .hero h1 span {
-      color: var(--red);
-    }
-
-    .hero .sub {
-      color: var(--dim);
-      margin-top: 16px;
-      font-size: 0.95rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    /* ── INPUT FORM ── */
-    .roast-form {
-      max-width: 700px;
-      margin: 32px auto;
-      padding: 0 24px;
-      display: flex;
-      gap: 0;
-    }
-
-    .roast-form input {
-      flex: 1;
-      background: #0f0f0f;
-      border: 3px solid var(--border);
-      border-right: none;
-      color: var(--fg);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9rem;
-      padding: 14px 18px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .roast-form input:focus {
-      border-color: var(--red);
-    }
-
-    .roast-form input::placeholder {
-      color: #333;
-    }
-
-    .roast-form button {
-      background: var(--red);
-      border: 3px solid var(--red);
-      color: var(--fg);
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.4rem;
-      letter-spacing: 2px;
-      padding: 0 32px;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-      white-space: nowrap;
-    }
-
-    .roast-form button:hover {
-      background: #cc0000;
-      border-color: #cc0000;
-    }
-
-    .roast-form button:disabled {
-      background: #330000;
-      border-color: #330000;
-      color: #666;
-      cursor: not-allowed;
-    }
-
-    /* ── LOADING ── */
-    #loading {
-      display: none;
-      text-align: center;
-      padding: 60px 24px;
-    }
-
-    .loading-icon {
-      font-size: 3rem;
-      animation: pulse 1s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.15); }
-    }
-
-    .loading-msg {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.8rem;
-      color: var(--red);
-      margin-top: 16px;
-      letter-spacing: 2px;
-      min-height: 2.5rem;
-    }
-
-    .loading-bar {
-      width: 300px;
-      height: 3px;
-      background: var(--border);
-      margin: 20px auto 0;
-      overflow: hidden;
-    }
-
-    .loading-bar-fill {
-      height: 100%;
-      background: var(--red);
-      animation: loading 2s linear infinite;
-    }
-
-    @keyframes loading {
-      0% { width: 0%; margin-left: 0%; }
-      50% { width: 60%; margin-left: 20%; }
-      100% { width: 0%; margin-left: 100%; }
-    }
-
-    /* ── ERROR ── */
-    #error-box {
-      display: none;
-      max-width: 700px;
-      margin: 24px auto;
-      padding: 0 24px;
-    }
-
-    .error-msg {
-      background: #1a0000;
-      border: 3px solid var(--red);
-      padding: 16px 20px;
-      color: var(--red);
-      font-size: 0.9rem;
-    }
-
-    /* ── RESULT ── */
-    #result {
-      display: none;
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 0 24px 60px;
-    }
-
-    /* Repo stats bar */
-    .repo-stats {
-      background: var(--card-bg);
-      border: 2px solid var(--border);
-      padding: 20px 24px;
-      margin-bottom: 24px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 24px;
+    .hero-badge {
+      display: inline-flex;
       align-items: center;
-    }
-
-    .repo-name {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.6rem;
-      letter-spacing: 1px;
-      color: var(--fg);
-    }
-
-    .stat-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .pill {
-      background: #1a1a1a;
+      gap: 6px;
+      background: var(--surface2);
       border: 1px solid var(--border);
-      padding: 4px 10px;
-      font-size: 0.75rem;
-      color: var(--dim);
-    }
-
-    .pill strong {
-      color: var(--fg);
-    }
-
-    /* Score block */
-    .score-block {
-      background: var(--card-bg);
-      border: 3px solid var(--red);
-      padding: 32px;
-      margin-bottom: 24px;
-      text-align: center;
-    }
-
-    .score-number {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(4rem, 15vw, 8rem);
-      color: var(--red);
-      line-height: 1;
-      letter-spacing: 2px;
-    }
-
-    .score-label {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(1.2rem, 4vw, 2rem);
-      letter-spacing: 3px;
-      color: var(--fg);
-      margin-top: 8px;
-    }
-
-    /* Roast lines */
-    .roast-lines {
-      background: var(--card-bg);
-      border: 2px solid var(--border);
-      padding: 24px;
+      border-radius: 99px;
+      padding: 6px 18px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
       margin-bottom: 24px;
     }
-
-    .roast-lines h3 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.2rem;
-      letter-spacing: 2px;
-      color: var(--red);
+    .hero-badge span { color: var(--fire); }
+    .hero h1 {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(2.8rem, 9vw, 5.5rem);
+      line-height: 1.05;
       margin-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 8px;
     }
-
-    .roast-line {
-      display: flex;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid #1a1a1a;
-      font-size: 0.9rem;
-      line-height: 1.5;
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--fire), var(--fire2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-
-    .roast-line:last-child { border-bottom: none; }
-
-    .fire { flex-shrink: 0; }
-
-    /* Worst offense */
-    .worst-offense {
-      background: #1a0000;
-      border: 2px solid var(--red);
-      border-left: 6px solid var(--red);
-      padding: 16px 20px;
-      margin-bottom: 24px;
-    }
-
-    .worst-offense .label {
-      font-size: 0.7rem;
-      color: var(--red);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 6px;
-    }
-
-    .worst-offense p {
-      font-size: 0.9rem;
-      color: var(--fg);
-    }
-
-    /* Redeeming quality */
-    .redeeming {
-      background: var(--card-bg);
-      border: 2px solid #1a3a1a;
-      border-left: 6px solid #336633;
-      padding: 16px 20px;
+    .hero p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      font-weight: 600;
       margin-bottom: 32px;
     }
 
-    .redeeming .label {
-      font-size: 0.7rem;
-      color: #336633;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 6px;
+    /* ── input card ── */
+    .input-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 8px 8px 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      box-shadow: 0 0 40px rgba(0,0,0,0.4);
+      transition: box-shadow 0.3s;
+    }
+    .input-card:focus-within {
+      box-shadow: 0 0 0 2px var(--fire), 0 0 60px var(--glow);
+    }
+    .input-card input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--fg);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    .input-card input::placeholder { color: rgba(255,255,255,0.18); }
+    .btn-roast {
+      background: linear-gradient(135deg, var(--fire), var(--fire2));
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 28px;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.1rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+      box-shadow: 0 4px 24px var(--glow);
+    }
+    .btn-roast:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 32px var(--glow); }
+    .btn-roast:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── error ── */
+    #error-box { display: none; margin-top: 14px; }
+    .error-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,80,80,0.1);
+      border: 1px solid rgba(255,80,80,0.25);
+      border-radius: 99px;
+      padding: 9px 20px;
+      color: #ff8888;
+      font-size: 0.88rem;
+      font-weight: 700;
     }
 
-    .redeeming p {
-      font-style: italic;
-      color: var(--dim);
-      font-size: 0.9rem;
+    /* ── loading ── */
+    #loading { display: none; text-align: center; padding: 70px 24px; }
+    .loading-emoji { font-size: 3rem; animation: bob 1s ease-in-out infinite; display: block; margin-bottom: 18px; }
+    @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    .loading-text {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.5rem;
+      color: var(--fire);
+      min-height: 2rem;
+      margin-bottom: 22px;
     }
+    .loading-dots { display: flex; gap: 7px; justify-content: center; }
+    .loading-dots span {
+      width: 8px; height: 8px;
+      background: var(--fire);
+      border-radius: 50%;
+      animation: dot 1.2s ease-in-out infinite;
+      opacity: 0.3;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dot { 0%,100%{opacity:0.3;transform:scale(1)} 50%{opacity:1;transform:scale(1.35)} }
 
-    /* Action buttons */
-    .actions {
+    /* ── result ── */
+    #result { display: none; padding-bottom: 80px; }
+
+    /* repo stats */
+    .repo-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 14px;
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 40px;
+      align-items: center;
+      gap: 16px;
+    }
+    .repo-name { font-family: 'Fredoka One', cursive; font-size: 1.3rem; }
+    .repo-desc { font-size: 0.82rem; color: var(--muted); margin-top: 3px; }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+    .pill {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 4px 12px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .pill b { color: var(--fg); }
+
+    /* score */
+    .score-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px 24px;
+      text-align: center;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .score-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% -20%, var(--glow), transparent 65%);
+      pointer-events: none;
+    }
+    .score-num {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(4rem, 14vw, 7rem);
+      line-height: 1;
+      background: linear-gradient(135deg, var(--fire), var(--fire2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .score-label {
+      font-family: 'Fredoka One', cursive;
+      font-size: clamp(1rem, 3.5vw, 1.6rem);
+      color: rgba(255,255,255,0.8);
+      margin-top: 8px;
     }
 
-    .btn {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.1rem;
+    /* roast lines */
+    .roast-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 14px;
+    }
+    .roast-card h3 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+    .roast-line {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.82);
+    }
+    .roast-line:last-child { border-bottom: none; padding-bottom: 0; }
+
+    /* offense + redeeming */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    @media(max-width:560px) { .two-col { grid-template-columns: 1fr; } }
+    .mini-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+    }
+    .mini-card .label {
+      font-size: 0.7rem;
+      font-weight: 900;
+      text-transform: uppercase;
       letter-spacing: 1.5px;
-      padding: 10px 24px;
-      border: 2px solid;
+      margin-bottom: 8px;
+    }
+    .mini-card p { font-size: 0.88rem; font-weight: 600; line-height: 1.5; }
+    .offense { border-color: rgba(255,107,53,0.25); }
+    .offense .label { color: var(--fire); }
+    .redeeming { border-color: rgba(74,222,128,0.18); }
+    .redeeming .label { color: var(--green); }
+    .redeeming p { color: var(--muted); font-style: italic; }
+
+    /* actions */
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+    .btn {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 0.88rem;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
       cursor: pointer;
       text-decoration: none;
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       transition: all 0.15s;
+      background: var(--surface);
+      color: var(--fg);
     }
-
+    .btn:hover { background: var(--surface2); border-color: rgba(255,255,255,0.15); transform: translateY(-1px); }
     .btn-primary {
-      background: var(--red);
-      border-color: var(--red);
+      background: linear-gradient(135deg, var(--fire), var(--fire2));
+      border-color: transparent;
+      box-shadow: 0 4px 20px var(--glow);
       color: #fff;
     }
+    .btn-primary:hover { box-shadow: 0 6px 30px var(--glow); transform: translateY(-2px); background: linear-gradient(135deg, var(--fire), var(--fire2)); }
+    .btn-tweet { border-color: rgba(29,155,240,0.3); color: #1d9bf0; }
+    .btn-tweet:hover { background: rgba(29,155,240,0.1); }
 
-    .btn-primary:hover { background: #cc0000; border-color: #cc0000; }
-
-    .btn-outline {
-      background: transparent;
-      border-color: var(--dim);
-      color: var(--dim);
-    }
-
-    .btn-outline:hover { border-color: var(--fg); color: var(--fg); }
-
-    .btn-tweet {
-      background: transparent;
-      border-color: #1d9bf0;
-      color: #1d9bf0;
-    }
-
-    .btn-tweet:hover { background: #1d9bf0; color: #000; }
-
-    /* Badge */
-    .badge-section {
-      background: var(--card-bg);
-      border: 2px solid var(--border);
-      padding: 20px 24px;
-      margin-bottom: 40px;
-    }
-
-    .badge-section h3 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1rem;
-      letter-spacing: 2px;
-      color: var(--dim);
-      margin-bottom: 12px;
-    }
-
-    .badge-code {
-      background: #0a0a0a;
+    /* badge */
+    .badge-card {
+      background: var(--surface);
       border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin-bottom: 48px;
+    }
+    .badge-card h3 {
+      font-size: 0.7rem;
+      font-weight: 900;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 10px;
+    }
+    .badge-code {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
       padding: 12px 16px;
       font-size: 0.8rem;
-      color: var(--dim);
-      word-break: break-all;
+      color: var(--muted);
       cursor: pointer;
       transition: border-color 0.2s;
+      word-break: break-all;
       position: relative;
+      font-family: monospace;
     }
+    .badge-code:hover { border-color: rgba(255,255,255,0.2); }
+    .copy-hint { position: absolute; top: 8px; right: 12px; font-size: 0.65rem; color: #333; }
 
-    .badge-code:hover { border-color: var(--dim); }
-
-    .badge-code .copy-hint {
-      position: absolute;
-      top: 8px;
-      right: 10px;
-      font-size: 0.65rem;
-      color: #444;
+    /* ── Hall of Shame ── */
+    .shame-section { padding-bottom: 80px; }
+    .shame-section h2 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
     }
-
-    /* Hall of Shame */
-    .shame {
-      margin-top: 60px;
-      padding: 0 24px;
-      max-width: 860px;
-      margin-left: auto;
-      margin-right: auto;
+    .shame-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media(max-width:560px) { .shame-grid { grid-template-columns: 1fr; } }
+    .shame-col h3 {
+      font-size: 0.72rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      margin-bottom: 10px;
     }
-
-    .shame h2 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2rem;
-      letter-spacing: 3px;
-      border-bottom: 3px solid var(--red);
-      padding-bottom: 8px;
-      margin-bottom: 24px;
-    }
-
-    .shame-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    @media (max-width: 600px) { .shame-grid { grid-template-columns: 1fr; } }
-
-    .shame-section h3 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1rem;
-      letter-spacing: 2px;
-      color: var(--red);
-      margin-bottom: 12px;
-    }
-
     .shame-item {
-      background: var(--card-bg);
+      background: var(--surface);
       border: 1px solid var(--border);
-      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
       margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 8px;
     }
+    .shame-repo { font-size: 0.85rem; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .shame-score { font-family: 'Fredoka One', cursive; font-size: 1.1rem; color: var(--fire); flex-shrink: 0; }
+    .shame-score.good { color: var(--green); }
+    .shame-empty { font-size: 0.85rem; color: var(--muted); font-style: italic; }
 
-    .shame-repo { font-size: 0.85rem; color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .shame-score { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--red); flex-shrink: 0; }
-    .shame-score.good { color: #33cc33; }
-
-    .shame-empty { color: var(--dim); font-size: 0.85rem; font-style: italic; }
-
-    /* ── ROAST CARD (hidden, for html2canvas) ── */
+    /* ── hidden roast card (html2canvas) ── */
     #roast-card {
-      position: fixed;
-      top: -9999px;
-      left: -9999px;
-      width: 800px;
-      height: 400px;
-      background: #0a0a0a;
-      border: 3px solid #ff3333;
-      padding: 40px 48px;
-      font-family: 'JetBrains Mono', monospace;
+      position: fixed; top: -9999px; left: -9999px;
+      width: 800px; height: 400px;
+      background: #07070f;
+      border: 2px solid rgba(255,107,53,0.4);
+      border-radius: 24px;
+      padding: 44px 52px;
+      font-family: 'Nunito', sans-serif;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
+    #roast-card .ct { display: flex; justify-content: space-between; align-items: flex-start; }
+    #roast-card .c-roasted { font-family: 'Fredoka One', cursive; font-size: 3.2rem; color: #ff6b35; line-height: 1; }
+    #roast-card .c-repo { font-size: 1rem; color: rgba(255,255,255,0.5); margin-top: 6px; font-weight: 700; }
+    #roast-card .c-score { text-align: right; }
+    #roast-card .c-num { font-family: 'Fredoka One', cursive; font-size: 3rem; color: #ff6b35; line-height: 1; }
+    #roast-card .c-lbl { font-family: 'Fredoka One', cursive; font-size: 0.95rem; color: #fff; margin-top: 4px; }
+    #roast-card .c-line { font-size: 1.1rem; color: rgba(255,255,255,0.8); font-style: italic; font-weight: 700; line-height: 1.4; flex: 1; display: flex; align-items: center; }
+    #roast-card .c-foot { display: flex; justify-content: flex-end; }
+    #roast-card .c-site { font-size: 0.8rem; color: rgba(255,255,255,0.18); font-weight: 700; }
 
-    #roast-card .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
-
-    #roast-card .card-roasted {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 4rem;
-      color: #ff3333;
-      line-height: 1;
-      letter-spacing: 3px;
-    }
-
-    #roast-card .card-score-block { text-align: right; }
-
-    #roast-card .card-score-num {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 3.5rem;
-      color: #ff3333;
-      line-height: 1;
-    }
-
-    #roast-card .card-score-lbl {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1rem;
-      color: #ffffff;
-      letter-spacing: 2px;
-    }
-
-    #roast-card .card-repo {
-      font-size: 1.1rem;
-      color: #ffffff;
-      font-weight: 700;
-      margin-top: 8px;
-    }
-
-    #roast-card .card-line {
-      font-size: 1.05rem;
-      color: #cccccc;
-      font-style: italic;
-      line-height: 1.4;
-      max-width: 680px;
-      flex: 1;
-      display: flex;
-      align-items: center;
-    }
-
-    #roast-card .card-footer {
-      display: flex;
-      justify-content: flex-end;
-      align-items: flex-end;
-    }
-
-    #roast-card .card-site {
-      font-size: 0.8rem;
-      color: #444444;
-      letter-spacing: 1px;
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 600px) {
-      .roast-form { flex-direction: column; }
-      .roast-form input { border-right: 3px solid var(--border); }
-      .roast-form button { border-top: none; padding: 14px; font-size: 1.6rem; }
+    @media(max-width:600px) {
+      nav { padding: 16px 20px; }
+      .input-card { flex-direction: column; padding: 12px; }
+      .input-card input { width: 100%; }
+      .btn-roast { width: 100%; padding: 14px; }
       .actions { flex-direction: column; }
-      .btn { text-align: center; }
+      .btn { justify-content: center; }
+      .pills { margin-left: 0; }
     }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">ROAST MY REPO 🔥</div>
-  <div class="tag">AI Code Destruction Engine v1.0</div>
-</header>
+<div class="orb orb-a"></div>
+<div class="orb orb-b"></div>
 
-<!-- LANDING -->
-<section class="hero" id="landing">
-  <h1>YOUR CODE<br><span>DESERVES</span><br>THIS</h1>
-  <p class="sub">Paste a GitHub repo. Get destroyed.</p>
-</section>
+<nav>
+  <div class="nav-logo">Roast My Repo 🔥</div>
+  <div class="nav-tag">Powered by Claude Haiku</div>
+</nav>
 
-<div class="roast-form">
-  <input
-    type="text"
-    id="repo-url"
-    placeholder="https://github.com/you/your-regret"
-    autocomplete="off"
-    spellcheck="false"
-  />
-  <button id="roast-btn" onclick="startRoast()">ROAST IT</button>
-</div>
+<div class="wrap">
 
-<div id="error-box">
-  <div class="error-msg" id="error-msg"></div>
-</div>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">🔥 <span>AI-powered</span> code destruction</div>
+    <h1>Your repo deserves<br>to be <em>roasted.</em></h1>
+    <p>Paste a GitHub link. Get destroyed. Feel things.</p>
 
-<!-- LOADING -->
-<div id="loading">
-  <div class="loading-icon">🔥</div>
-  <div class="loading-msg" id="loading-msg">Reading your spaghetti...</div>
-  <div class="loading-bar"><div class="loading-bar-fill"></div></div>
-</div>
+    <div class="input-card">
+      <input
+        id="repo-url"
+        type="text"
+        placeholder="https://github.com/you/your-regret"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button class="btn-roast" id="roast-btn" onclick="startRoast()">Roast it 🔥</button>
+    </div>
 
-<!-- RESULT -->
-<div id="result">
-  <div class="repo-stats" id="repo-stats"></div>
-  <div class="score-block">
-    <div class="score-number" id="score-number">0</div>
-    <div class="score-label" id="score-label">LOADING...</div>
+    <div id="error-box">
+      <div class="error-pill">⚠️ <span id="error-msg"></span></div>
+    </div>
+  </section>
+
+  <!-- Loading -->
+  <div id="loading">
+    <span class="loading-emoji">🔥</span>
+    <div class="loading-text" id="loading-msg">Reading your spaghetti...</div>
+    <div class="loading-dots"><span></span><span></span><span></span></div>
   </div>
-  <div class="roast-lines">
-    <h3>🔥 THE ROAST</h3>
-    <div id="roast-lines-container"></div>
-  </div>
-  <div class="worst-offense">
-    <div class="label">⚠ WORST OFFENSE</div>
-    <p id="worst-offense-text"></p>
-  </div>
-  <div class="redeeming">
-    <div class="label">✓ ONE REDEEMING QUALITY</div>
-    <p id="redeeming-text"></p>
-  </div>
-  <div class="actions">
-    <button class="btn btn-primary" onclick="downloadCard()">📸 DOWNLOAD ROAST CARD</button>
-    <a class="btn btn-tweet" id="tweet-btn" href="#" target="_blank" rel="noopener">🐦 TWEET THIS</a>
-    <button class="btn btn-outline" onclick="copyBadge()">📋 COPY README BADGE</button>
-    <button class="btn btn-outline" onclick="roastAnother()">🔄 ROAST ANOTHER</button>
-  </div>
-  <div class="badge-section">
-    <h3>ADD BADGE TO README</h3>
-    <div class="badge-code" id="badge-code" onclick="copyBadge()">
-      <span class="copy-hint">click to copy</span>
-      <span id="badge-markdown"></span>
+
+  <!-- Result -->
+  <div id="result">
+    <div class="repo-card" id="repo-stats"></div>
+
+    <div class="score-card">
+      <div class="score-num" id="score-num">—</div>
+      <div class="score-label" id="score-label"></div>
+    </div>
+
+    <div class="roast-card">
+      <h3>🔥 The Roast</h3>
+      <div id="roast-lines"></div>
+    </div>
+
+    <div class="two-col">
+      <div class="mini-card offense">
+        <div class="label">⚡ Worst Offense</div>
+        <p id="worst-offense"></p>
+      </div>
+      <div class="mini-card redeeming">
+        <div class="label">✓ One Redeeming Quality</div>
+        <p id="redeeming"></p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="downloadCard()">📸 Download Card</button>
+      <a class="btn btn-tweet" id="tweet-btn" href="#" target="_blank" rel="noopener">🐦 Tweet This</a>
+      <button class="btn" onclick="copyBadge()">📋 Copy Badge</button>
+      <button class="btn" onclick="roastAnother()">🔄 Roast Another</button>
+    </div>
+
+    <div class="badge-card">
+      <h3>Add badge to your README</h3>
+      <div class="badge-code" id="badge-code" onclick="copyBadge()">
+        <span class="copy-hint">click to copy</span>
+        <span id="badge-md"></span>
+      </div>
     </div>
   </div>
+
+  <!-- Hall of Shame -->
+  <section class="shame-section">
+    <h2>🏛️ Hall of Shame</h2>
+    <div class="shame-grid">
+      <div class="shame-col">
+        <h3>💀 Lowest scores</h3>
+        <div id="shame-list"></div>
+      </div>
+      <div class="shame-col">
+        <h3>🏆 Rare based code</h3>
+        <div id="based-list"></div>
+      </div>
+    </div>
+  </section>
+
 </div>
 
-<!-- HALL OF SHAME -->
-<div class="shame" id="hall-of-shame">
-  <h2>HALL OF SHAME</h2>
-  <div class="shame-grid">
-    <div class="shame-section">
-      <h3>💀 LOWEST SCORES</h3>
-      <div id="shame-list"></div>
-    </div>
-    <div class="shame-section">
-      <h3>🏆 RARE BASED CODE</h3>
-      <div id="based-list"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ROAST CARD (hidden, for download) -->
+<!-- Hidden roast card for html2canvas -->
 <div id="roast-card">
-  <div class="card-top">
+  <div class="ct">
     <div>
-      <div class="card-roasted">ROASTED 🔥</div>
-      <div class="card-repo" id="card-repo-name"></div>
+      <div class="c-roasted">Roasted 🔥</div>
+      <div class="c-repo" id="card-repo"></div>
     </div>
-    <div class="card-score-block">
-      <div class="card-score-num" id="card-score-num"></div>
-      <div class="card-score-lbl" id="card-score-lbl"></div>
+    <div class="c-score">
+      <div class="c-num" id="card-num"></div>
+      <div class="c-lbl" id="card-lbl"></div>
     </div>
   </div>
-  <div class="card-line" id="card-best-line"></div>
-  <div class="card-footer">
-    <div class="card-site">roast.oliverprojects.tech</div>
-  </div>
+  <div class="c-line" id="card-line"></div>
+  <div class="c-foot"><div class="c-site">roast.oliverprojects.tech</div></div>
 </div>
 
 <script>
-  // ── State ──
-  let currentRoast = null;
-  let currentRepo = null;
-  let loadingInterval = null;
+  let currentRoast = null, currentRepo = null, loadingTimer = null;
 
-  const loadingMessages = [
+  const msgs = [
     "Reading your spaghetti...",
     "Counting the console.logs...",
     "Finding your 47 TODO comments...",
     "Checking if you wrote tests... lol",
     "Judging your variable names...",
     "This might take a while. Unlike your commits.",
-    "Evaluating your commit messages...",
-    "Calculating lines of dead code...",
-    "Assessing README quality (low bar)...",
-    "Preparing psychological damage...",
+    "Evaluating your life choices...",
+    "Calculating the damage...",
   ];
 
-  // ── Entry point ──
+  document.getElementById('repo-url').addEventListener('keydown', e => {
+    if (e.key === 'Enter') startRoast();
+  });
+
   function startRoast() {
     const url = document.getElementById('repo-url').value.trim();
     if (!url) return;
-
-    hideAll();
-    showLoading();
-    startLoadingMessages();
-
+    hide('result'); hide('error-box'); show('loading');
     document.getElementById('roast-btn').disabled = true;
+    startMsgs();
 
     fetch('/api/roast', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ repoUrl: url }),
     })
-      .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Unknown error');
-        return data;
-      })
-      .then((data) => {
-        stopLoadingMessages();
-        currentRoast = data.roast;
-        currentRepo = data.repo;
-        displayResult(data);
-        saveToShame(data);
-        renderShame();
-      })
-      .catch((err) => {
-        stopLoadingMessages();
-        showError(err.message || "Our roaster broke. Probably JavaScript's fault.");
-      })
-      .finally(() => {
-        document.getElementById('roast-btn').disabled = false;
-        hideLoading();
-      });
+    .then(async r => { const d = await r.json(); if (!r.ok) throw new Error(d.error); return d; })
+    .then(d => { stopMsgs(); currentRoast = d.roast; currentRepo = d.repo; render(d); saveShame(d); renderShame(); })
+    .catch(e => { stopMsgs(); showError(e.message || "Our roaster broke. Probably JavaScript's fault."); })
+    .finally(() => { hide('loading'); document.getElementById('roast-btn').disabled = false; });
   }
 
-  // Allow Enter key
-  document.getElementById('repo-url').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') startRoast();
-  });
-
-  // ── Display result ──
-  function displayResult(data) {
-    const { roast, repo } = data;
-
-    // Stats bar
-    const lastCommitStr = repo.daysSinceCommit != null
-      ? `${repo.daysSinceCommit}d ago`
-      : 'unknown';
+  function render({ roast, repo }) {
+    const last = repo.daysSinceCommit != null ? `${repo.daysSinceCommit}d ago` : '?';
     document.getElementById('repo-stats').innerHTML = `
       <div>
-        <div class="repo-name">${escHtml(repo.fullName)}</div>
-        ${repo.description ? `<div style="color:#666;font-size:0.8rem;margin-top:4px">${escHtml(repo.description)}</div>` : ''}
+        <div class="repo-name">${esc(repo.fullName)}</div>
+        ${repo.description ? `<div class="repo-desc">${esc(repo.description)}</div>` : ''}
       </div>
-      <div class="stat-pills">
-        <span class="pill">⭐ <strong>${repo.stars}</strong></span>
-        <span class="pill">🍴 <strong>${repo.forks}</strong></span>
-        <span class="pill">🐛 <strong>${repo.openIssues}</strong> issues</span>
-        <span class="pill">💻 <strong>${escHtml(repo.primaryLanguage || 'None')}</strong></span>
-        <span class="pill">🕐 last commit <strong>${lastCommitStr}</strong></span>
-      </div>
-    `;
+      <div class="pills">
+        <span class="pill">⭐ <b>${repo.stars}</b></span>
+        <span class="pill">🍴 <b>${repo.forks}</b></span>
+        <span class="pill">🐛 <b>${repo.openIssues}</b> issues</span>
+        <span class="pill">💻 <b>${esc(repo.primaryLanguage||'?')}</b></span>
+        <span class="pill">🕐 <b>${last}</b></span>
+      </div>`;
 
-    // Score
-    document.getElementById('score-number').textContent = roast.score.toFixed(1) + ' / 10';
+    document.getElementById('score-num').textContent   = roast.score.toFixed(1) + ' / 10';
     document.getElementById('score-label').textContent = roast.scoreLabel || '';
 
-    // Roast lines
-    const container = document.getElementById('roast-lines-container');
-    container.innerHTML = '';
-    (roast.roastLines || []).forEach((line) => {
-      const div = document.createElement('div');
-      div.className = 'roast-line';
-      div.innerHTML = `<span class="fire">🔥</span><span>${escHtml(line)}</span>`;
-      container.appendChild(div);
+    const lc = document.getElementById('roast-lines');
+    lc.innerHTML = '';
+    (roast.roastLines || []).forEach(l => {
+      const d = document.createElement('div');
+      d.className = 'roast-line';
+      d.innerHTML = `<span>🔥</span><span>${esc(l)}</span>`;
+      lc.appendChild(d);
     });
 
-    // Worst offense
-    document.getElementById('worst-offense-text').textContent = roast.worstOffense || '';
+    document.getElementById('worst-offense').textContent = roast.worstOffense || '';
+    document.getElementById('redeeming').textContent     = roast.redeemingQuality || '';
 
-    // Redeeming
-    document.getElementById('redeeming-text').textContent = roast.redeemingQuality || '';
+    const tweet = encodeURIComponent(`my repo got roasted 🔥\n"${roast.worstOffense}" — ${roast.score}/10 ${roast.scoreLabel}\nroast.oliverprojects.tech`);
+    document.getElementById('tweet-btn').href = `https://twitter.com/intent/tweet?text=${tweet}`;
 
-    // Tweet button
-    const tweetText = encodeURIComponent(
-      `my repo got roasted 🔥 "${roast.worstOffense}" — ${roast.score}/10 ${roast.scoreLabel}\nroast.oliverprojects.tech`
-    );
-    document.getElementById('tweet-btn').href = `https://twitter.com/intent/tweet?text=${tweetText}`;
+    const badge = `![Roast Score](https://img.shields.io/badge/roast-${encodeURIComponent(roast.score+'/10🔥')}-orange?style=for-the-badge)`;
+    document.getElementById('badge-md').textContent = badge;
 
-    // Badge
-    const scoreEncoded = encodeURIComponent(`${roast.score}/10🔥`);
-    const badgeMd = `![Roast Score](https://img.shields.io/badge/roast-${scoreEncoded}-red?style=for-the-badge)`;
-    document.getElementById('badge-markdown').textContent = badgeMd;
+    document.getElementById('card-repo').textContent = repo.fullName;
+    document.getElementById('card-num').textContent  = roast.score.toFixed(1) + '/10';
+    document.getElementById('card-lbl').textContent  = roast.scoreLabel || '';
+    document.getElementById('card-line').textContent = '"' + (roast.roastLines?.[0] || '') + '"';
 
-    // Roast card (hidden div)
-    document.getElementById('card-repo-name').textContent = repo.fullName;
-    document.getElementById('card-score-num').textContent = roast.score.toFixed(1) + '/10';
-    document.getElementById('card-score-lbl').textContent = roast.scoreLabel || '';
-    document.getElementById('card-best-line').textContent =
-      '"' + (roast.roastLines?.[0] || '') + '"';
-
-    showResult();
+    show('result');
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  // ── Download roast card ──
   function downloadCard() {
     const card = document.getElementById('roast-card');
+    card.style.position = 'absolute';
     card.style.top = '0';
     card.style.left = '0';
-    card.style.position = 'absolute';
     card.style.zIndex = '-1';
-
-    html2canvas(card, {
-      backgroundColor: '#0a0a0a',
-      scale: 2,
-      useCORS: true,
-      logging: false,
-    }).then((canvas) => {
-      card.style.top = '-9999px';
-      card.style.left = '-9999px';
-      card.style.position = 'fixed';
-
-      const link = document.createElement('a');
-      link.download = `roast-${(currentRepo?.name || 'repo').replace(/[^a-z0-9]/gi, '-')}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    }).catch(() => {
-      card.style.top = '-9999px';
-      card.style.left = '-9999px';
-      card.style.position = 'fixed';
-      alert('Card generation failed. Skill issue.');
-    });
+    html2canvas(card, { backgroundColor: '#07070f', scale: 2, useCORS: true, logging: false })
+      .then(canvas => {
+        card.style.position = 'fixed';
+        card.style.top = '-9999px';
+        card.style.left = '-9999px';
+        const a = document.createElement('a');
+        a.download = `roast-${(currentRepo?.name||'repo').replace(/[^a-z0-9]/gi,'-')}.png`;
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+      })
+      .catch(() => alert('Card failed. Skill issue.'));
   }
 
-  // ── Copy badge ──
   function copyBadge() {
-    const md = document.getElementById('badge-markdown').textContent;
-    navigator.clipboard.writeText(md).then(() => {
+    navigator.clipboard.writeText(document.getElementById('badge-md').textContent).then(() => {
       const el = document.getElementById('badge-code');
-      const orig = el.style.borderColor;
-      el.style.borderColor = '#33cc33';
-      setTimeout(() => { el.style.borderColor = orig; }, 1200);
+      el.style.borderColor = '#4ade80';
+      setTimeout(() => el.style.borderColor = '', 1400);
     });
   }
 
-  // ── Roast another ──
   function roastAnother() {
-    hideAll();
+    hide('result');
     document.getElementById('repo-url').value = '';
     document.getElementById('repo-url').focus();
-    renderShame();
   }
 
-  // ── Hall of Shame (localStorage) ──
-  function saveToShame(data) {
-    const { roast, repo } = data;
-    const entry = {
-      repo: repo.fullName,
-      score: roast.score,
-      worstOffense: roast.worstOffense,
-      roastedAt: new Date().toISOString(),
-    };
-    let hall = getHall();
-    // Prevent dupes
-    hall = hall.filter(e => e.repo !== entry.repo);
-    hall.push(entry);
-    // Keep last 50
-    if (hall.length > 50) hall = hall.slice(-50);
-    localStorage.setItem('roast_hall', JSON.stringify(hall));
+  function saveShame({ roast, repo }) {
+    let h = getHall().filter(e => e.repo !== repo.fullName);
+    h.push({ repo: repo.fullName, score: roast.score, worstOffense: roast.worstOffense, roastedAt: new Date().toISOString() });
+    if (h.length > 50) h = h.slice(-50);
+    localStorage.setItem('roast_hall', JSON.stringify(h));
   }
-
-  function getHall() {
-    try {
-      return JSON.parse(localStorage.getItem('roast_hall') || '[]');
-    } catch { return []; }
-  }
-
+  function getHall() { try { return JSON.parse(localStorage.getItem('roast_hall')||'[]'); } catch { return []; } }
   function renderShame() {
-    const hall = getHall();
-    if (hall.length === 0) {
+    const h = getHall();
+    if (!h.length) {
       document.getElementById('shame-list').innerHTML = '<div class="shame-empty">No victims yet. Be the first.</div>';
       document.getElementById('based-list').innerHTML = '<div class="shame-empty">No heroes yet.</div>';
       return;
     }
-
-    const sorted = [...hall].sort((a, b) => a.score - b.score);
-
-    // Bottom 10 (lowest scores)
-    const worst = sorted.slice(0, 10);
-    document.getElementById('shame-list').innerHTML = worst.map(e => `
-      <div class="shame-item">
-        <span class="shame-repo" title="${escHtml(e.repo)}">${escHtml(e.repo)}</span>
-        <span class="shame-score">${e.score.toFixed(1)}</span>
-      </div>
-    `).join('');
-
-    // Top 3 (highest scores)
-    const best = sorted.slice(-3).reverse();
-    document.getElementById('based-list').innerHTML = best.map(e => `
-      <div class="shame-item">
-        <span class="shame-repo" title="${escHtml(e.repo)}">${escHtml(e.repo)}</span>
-        <span class="shame-score good">${e.score.toFixed(1)}</span>
-      </div>
-    `).join('');
+    const sorted = [...h].sort((a,b) => a.score - b.score);
+    document.getElementById('shame-list').innerHTML = sorted.slice(0,10).map(e =>
+      `<div class="shame-item"><span class="shame-repo" title="${esc(e.repo)}">${esc(e.repo)}</span><span class="shame-score">${e.score.toFixed(1)}</span></div>`
+    ).join('');
+    document.getElementById('based-list').innerHTML = sorted.slice(-3).reverse().map(e =>
+      `<div class="shame-item"><span class="shame-repo" title="${esc(e.repo)}">${esc(e.repo)}</span><span class="shame-score good">${e.score.toFixed(1)}</span></div>`
+    ).join('');
   }
 
-  // ── UI helpers ──
-  function hideAll() {
-    document.getElementById('result').style.display = 'none';
-    document.getElementById('error-box').style.display = 'none';
-    document.getElementById('loading').style.display = 'none';
-  }
-
-  function showLoading() {
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('loading-msg').textContent = loadingMessages[0];
-  }
-
-  function hideLoading() {
-    document.getElementById('loading').style.display = 'none';
-  }
-
-  function showError(msg) {
-    document.getElementById('error-box').style.display = 'block';
-    document.getElementById('error-msg').textContent = msg;
-  }
-
-  function showResult() {
-    document.getElementById('result').style.display = 'block';
-    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
+  function show(id) { document.getElementById(id).style.display = 'block'; }
+  function hide(id) { document.getElementById(id).style.display = 'none'; }
+  function showError(msg) { document.getElementById('error-msg').textContent = msg; show('error-box'); }
   let msgIdx = 0;
-  function startLoadingMessages() {
+  function startMsgs() {
     msgIdx = 0;
-    loadingInterval = setInterval(() => {
-      msgIdx = (msgIdx + 1) % loadingMessages.length;
-      document.getElementById('loading-msg').textContent = loadingMessages[msgIdx];
-    }, 2200);
+    document.getElementById('loading-msg').textContent = msgs[0];
+    loadingTimer = setInterval(() => { msgIdx = (msgIdx+1)%msgs.length; document.getElementById('loading-msg').textContent = msgs[msgIdx]; }, 2200);
   }
+  function stopMsgs() { clearInterval(loadingTimer); }
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-  function stopLoadingMessages() {
-    if (loadingInterval) clearInterval(loadingInterval);
-  }
-
-  function escHtml(str) {
-    if (!str) return '';
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-
-  // ── Init ──
   renderShame();
 </script>
 </body>
