@@ -74,12 +74,12 @@ async function fetchRepoData(owner, repo) {
     throw repoInfo.reason;
   }
 
-  // Try to get README
+  // Try to get README (capped short — we don't need a novel)
   let readme = null;
   try {
     const readmeData = await githubFetch(`${base}/readme`);
     if (readmeData.content) {
-      readme = Buffer.from(readmeData.content, 'base64').toString('utf-8').slice(0, 2000);
+      readme = Buffer.from(readmeData.content, 'base64').toString('utf-8').slice(0, 400);
     }
   } catch {
     readme = null;
@@ -135,39 +135,16 @@ async function fetchRepoData(owner, repo) {
   };
 }
 
-// Build Claude prompt
+// Build Claude prompt — kept lean to save tokens
 function buildPrompt(data) {
-  const langList = Object.keys(data.languages).join(', ') || data.primaryLanguage || 'Unknown';
-  const commitMessages = data.recentCommits.map(c => `"${c.message}" by ${c.author}`).join('\n');
+  const langList = Object.keys(data.languages).join(', ') || data.primaryLanguage || '?';
+  const commits = data.recentCommits.slice(0, 3).map(c => `"${c.message}"`).join(', ');
 
-  return `You are roasting this GitHub repository. Here is the data:
-
-REPO: ${data.fullName}
-DESCRIPTION: ${data.description}
-LANGUAGE(S): ${langList}
-PRIMARY LANGUAGE: ${data.primaryLanguage}
-STARS: ${data.stars}
-FORKS: ${data.forks}
-OPEN ISSUES: ${data.openIssues}
-REPO SIZE: ${data.size}KB
-CREATED: ${data.createdAt}
-LAST UPDATED: ${data.updatedAt}
-DAYS SINCE LAST COMMIT: ${data.daysSinceCommit ?? 'unknown'}
-LICENSE: ${data.license}
-ARCHIVED: ${data.archived}
-TOPICS: ${data.topics.join(', ') || 'none'}
-DEFAULT BRANCH: ${data.defaultBranch}
-
-RECENT COMMITS (last 5):
-${commitMessages || 'No commits found'}
-
-FILE TREE (root level):
-${data.files}
-
-README (first 2000 chars):
-${data.readme || 'No README found. Brave.'}
-
-Now roast this repository. Be brutal, specific, and hilarious. Focus on what you can actually see in the data above.`;
+  return `Repo: ${data.fullName} | Lang: ${langList} | Stars: ${data.stars} | Forks: ${data.forks} | Issues: ${data.openIssues} | Size: ${data.size}KB | Last commit: ${data.daysSinceCommit ?? '?'}d ago | License: ${data.license}
+Files: ${data.files}
+Recent commits: ${commits || 'none'}
+README snippet: ${data.readme ? data.readme.slice(0, 300) : 'none'}
+Roast it.`;
 }
 
 // POST /api/roast
@@ -191,32 +168,15 @@ app.post('/api/roast', limiter, async (req, res) => {
       return res.status(403).json({ error: 'This repo is too ashamed to be public.' });
     }
 
-    // Call Claude
+    // Call Claude — 400 tokens max, keep it punchy not a dissertation
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1000,
-      system: `You are a brutally honest, savage but funny code reviewer.
-Your job is to roast GitHub repositories like a comedy roast — brutal, specific, and hilarious, but never genuinely mean-spirited.
-Focus on: variable names, commit messages, README quality, file structure, language choices, last commit date, open issues, code-to-readme ratio, and any other red flags.
-Respond ONLY in raw JSON (no markdown, no backticks):
-{
-  "score": 4.2,
-  "scoreLabel": "CRIES IN JAVASCRIPT",
-  "roastLines": [
-    "Your last commit was 3 years ago. The code did not age well either.",
-    "47 open issues and a README that just says TODO. Bold strategy.",
-    "You named a variable temp2. temp1 was not good enough?",
-    "The entire project is one 2000-line index.js. Brave."
-  ],
-  "redeemingQuality": "At least you pushed to GitHub. Most peoples bad code never leaves their laptop.",
-  "worstOffense": "Your last commit message was fix"
-}
-Score guide:
-1-3: catastrophic
-4-5: concerning
-6-7: mediocre but survivable
-8-9: actually decent (be reluctantly impressed)
-10: perfect (be suspicious and paranoid about it)`,
+      max_tokens: 400,
+      system: `Savage funny code reviewer. Roast the repo. Be brutal and specific, never mean-spirited.
+Respond ONLY in raw JSON (no markdown):
+{"score":4.2,"scoreLabel":"CRIES IN JAVASCRIPT","roastLines":["line1","line2","line3"],"redeemingQuality":"...","worstOffense":"..."}
+Score: 1-3 catastrophic, 4-5 concerning, 6-7 mediocre, 8-9 decent, 10 perfect (be suspicious).
+Keep each roastLine under 15 words. Max 3 lines.`,
       messages: [
         { role: 'user', content: buildPrompt(repoData) }
       ],
@@ -258,6 +218,16 @@ Score guide:
     }
     if (err.message === 'RATE_LIMITED') {
       return res.status(429).json({ error: 'GitHub rate limited us. Slow down. Even bad code needs a break.' });
+    }
+    // Anthropic API errors — credit exhausted, invalid key, overloaded
+    if (err.status === 401 || err.status === 403) {
+      return res.status(503).json({ error: "couldnt reach server bros api key might be drowned already 🤑🥀" });
+    }
+    if (err.status === 429 || err.status === 529) {
+      return res.status(503).json({ error: "couldnt reach server bros api key might be drowned already 🤑🥀" });
+    }
+    if (err.message?.toLowerCase().includes('credit') || err.message?.toLowerCase().includes('quota') || err.message?.toLowerCase().includes('billing')) {
+      return res.status(503).json({ error: "couldnt reach server bros api key might be drowned already 🤑🥀" });
     }
     console.error('Roast error:', err);
     return res.status(500).json({ error: "Our roaster broke. Probably JavaScript's fault." });
