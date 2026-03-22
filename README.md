@@ -1,6 +1,6 @@
 # ROAST MY REPO 🔥
 
-![Roast Score](https://img.shields.io/badge/roast-2.1%2F10🔥-red?style=for-the-badge)
+![Roast Score](https://img.shields.io/badge/roast-7.1%2F10🔥-red?style=for-the-badge)
 ![Built With](https://img.shields.io/badge/built_with-regret-black?style=for-the-badge)
 ![Last Commit](https://img.shields.io/badge/last_commit-probably_"fix"-red?style=for-the-badge)
 
@@ -14,7 +14,7 @@ We fed this very repository into itself. Here's what the AI had to say:
 
 ---
 
-**SCORE: 2.1 / 10 — CRIES IN NODE**
+**SCORE: 7.1 / 10 — MEDIOCRE BUT SURVIVABLE**
 
 🔥 Your entire backend is one `server.js` file. Bold of you to assume that's a project structure and not a cry for help.
 
