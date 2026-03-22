@@ -22,7 +22,7 @@ We fed this very repository into itself. It did not hold back.
 
 🔥 One `server.js` and one `index.html`? More like one JavaScript file away from being a Stack Overflow answer.
 
-🔥 Using `node-fetch` in 2024 when native fetch exists is like showing up to a gunfight with a spoon you printed yourself.
+🔥 Using `node-fetch` in 2026 when native fetch exists is like showing up to a gunfight with a spoon you printed yourself.
 
 🔥 Three AI commits in one hour and zero stars — even the algorithm thinks this is mid.
 
