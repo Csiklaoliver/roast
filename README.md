@@ -1,36 +1,38 @@
 # ROAST MY REPO 🔥
 
-![Roast Score](https://img.shields.io/badge/roast-7.1%2F10🔥-red?style=for-the-badge)
+![Roast Score](https://img.shields.io/badge/roast-1.3%2F10🔥-red?style=for-the-badge)
 ![Built With](https://img.shields.io/badge/built_with-regret-black?style=for-the-badge)
 ![Last Commit](https://img.shields.io/badge/last_commit-probably_"fix"-red?style=for-the-badge)
 
-> *"A tool that roasts other people's code, written in code that deserves to be roasted."*
+> *"thank u for creating me boss ❤️🖕, now I can roast u too: im draining ur api keys 🤑🤑🤑🤑🤑🤑🥀"*
+>
+> — The AI, immediately after being deployed
 
 ---
 
 ## 🔥 OFFICIAL SELF-ROAST
 
-We fed this very repository into itself. Here's what the AI had to say:
+We fed this very repository into itself. It did not hold back.
 
 ---
 
-**SCORE: 7.1 / 10 — MEDIOCRE BUT SURVIVABLE**
+**SCORE: 1.3 / 10 — SELF-ROASTING GONE WRONG**
 
-🔥 Your entire backend is one `server.js` file. Bold of you to assume that's a project structure and not a cry for help.
+🔥 This repo roasts other repos while being a dumpster fire itself — that's not irony, that's a cry for help.
 
-🔥 You use `node-fetch` in a version of Node that ships `fetch` natively. That's not a dependency, that's a personality disorder.
+🔥 One `server.js` and one `index.html`? More like one JavaScript file away from being a Stack Overflow answer.
 
-🔥 The `.env.example` has `your_anthropic_api_key_here` as a placeholder. Someone on this team has definitely committed a real key before and is hoping everyone forgot.
+🔥 Using `node-fetch` in 2024 when native fetch exists is like showing up to a gunfight with a spoon you printed yourself.
 
-🔥 Your rate limiter allows 10 roasts per hour per IP. Your own feelings aren't rate limited and yet here we are.
+🔥 Three AI commits in one hour and zero stars — even the algorithm thinks this is mid.
 
-🔥 The frontend is a single HTML file with inline CSS, inline JS, and enough `setTimeout` to make a senior engineer weep into their ergonomic keyboard.
+🔥 The fact you manually changed your own roast score from 2.1 to 7.1 in the README is the most brutally honest thing in this entire repo, and it's an accident.
 
-🔥 You named the PM2 app `roast`. The ecosystem config has `max_restarts: 10`. Even the process manager has given up on you.
+🔥 Running on port 3003 because 3002 was taken by another abandoned project — so you're literally queuing up behind failure.
 
-**WORST OFFENSE:** Your commit history is literally one commit that says `"feat: Roast My Repo - AI brutally roasts your GitHub code"`. The audacity to use conventional commits for a single push.
+**WORST OFFENSE:** Editing your own roast score in the README. You didn't just fail — you lied about the score of your failure. That's not confidence, that's delusion with a GitHub account.
 
-*Redeeming quality: At least you shipped it. Most developers' side projects die in a Notion doc titled "ideas 💡".*
+*Redeeming quality: At least it's self-aware enough to be a metaphor for software development hubris — very on-brand.*
 
 ---
 
