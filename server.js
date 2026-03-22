@@ -33,13 +33,17 @@ const limiter = rateLimit({
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Parse GitHub URL
+// Parse GitHub URL — returns { type: 'repo', owner, repo } or { type: 'profile', username }
 function parseGitHubUrl(url) {
   try {
     const cleaned = url.trim().replace(/\/$/, '').replace(/\.git$/, '');
-    const match = cleaned.match(/github\.com[/:]([^/]+)\/([^/]+)/);
-    if (!match) return null;
-    return { owner: match[1], repo: match[2] };
+    // Match github.com/owner/repo
+    const repoMatch = cleaned.match(/github\.com[/:]([^/]+)\/([^/\s?#]+)/);
+    if (repoMatch) return { type: 'repo', owner: repoMatch[1], repo: repoMatch[2] };
+    // Match github.com/username (profile)
+    const profileMatch = cleaned.match(/github\.com[/:]([^/\s?#]+)$/);
+    if (profileMatch) return { type: 'profile', username: profileMatch[1] };
+    return null;
   } catch {
     return null;
   }
@@ -147,6 +151,55 @@ README snippet: ${data.readme ? data.readme.slice(0, 300) : 'none'}
 Roast it.`;
 }
 
+// Fetch GitHub data for a user profile
+async function fetchProfileData(username) {
+  const base = `https://api.github.com/users/${username}`;
+
+  const [userInfo, repos] = await Promise.allSettled([
+    githubFetch(base),
+    githubFetch(`${base}/repos?sort=updated&per_page=8`),
+  ]);
+
+  if (userInfo.status === 'rejected') {
+    const err = userInfo.reason.message;
+    if (err === 'REPO_NOT_FOUND') throw new Error('USER_NOT_FOUND');
+    if (err === 'RATE_LIMITED') throw new Error('RATE_LIMITED');
+    throw userInfo.reason;
+  }
+
+  const info = userInfo.value;
+  const repoList = repos.status === 'fulfilled' ? repos.value : [];
+
+  const accountAgeYears = Math.floor((Date.now() - new Date(info.created_at)) / (1000 * 60 * 60 * 24 * 365));
+  const topRepos = repoList.slice(0, 6).map(r => `${r.name}(${r.language || '?'},⭐${r.stargazers_count})`).join(', ');
+  const languages = [...new Set(repoList.map(r => r.language).filter(Boolean))];
+  const totalStars = repoList.reduce((s, r) => s + (r.stargazers_count || 0), 0);
+
+  return {
+    type: 'profile',
+    username: info.login,
+    name: info.name || info.login,
+    bio: info.bio || 'No bio. Classic.',
+    followers: info.followers || 0,
+    following: info.following || 0,
+    publicRepos: info.public_repos || 0,
+    accountAgeYears,
+    totalStars,
+    topRepos,
+    languages,
+    hireable: info.hireable,
+    company: info.company || null,
+  };
+}
+
+// Build Claude prompt for a profile
+function buildProfilePrompt(data) {
+  return `GitHub dev: ${data.username} | Followers: ${data.followers} | Following: ${data.following} | Repos: ${data.publicRepos} | Account age: ${data.accountAgeYears}yr | Total stars: ${data.totalStars} | Bio: ${data.bio}
+Top repos: ${data.topRepos || 'none'}
+Languages: ${data.languages.join(', ') || 'none'}
+Roast this developer.`;
+}
+
 // POST /api/roast
 app.post('/api/roast', limiter, async (req, res) => {
   const { repoUrl } = req.body;
@@ -161,25 +214,60 @@ app.post('/api/roast', limiter, async (req, res) => {
   }
 
   try {
-    // Fetch GitHub data
-    const repoData = await fetchRepoData(parsed.owner, parsed.repo);
+    let prompt, returnPayload;
 
-    if (repoData.isPrivate) {
-      return res.status(403).json({ error: 'This repo is too ashamed to be public.' });
+    if (parsed.type === 'profile') {
+      const profileData = await fetchProfileData(parsed.username);
+      prompt = buildProfilePrompt(profileData);
+      returnPayload = {
+        type: 'profile',
+        profile: {
+          username: profileData.username,
+          name: profileData.name,
+          bio: profileData.bio,
+          followers: profileData.followers,
+          following: profileData.following,
+          publicRepos: profileData.publicRepos,
+          accountAgeYears: profileData.accountAgeYears,
+          totalStars: profileData.totalStars,
+          languages: profileData.languages,
+        },
+      };
+    } else {
+      const repoData = await fetchRepoData(parsed.owner, parsed.repo);
+      if (repoData.isPrivate) {
+        return res.status(403).json({ error: 'This repo is too ashamed to be public.' });
+      }
+      prompt = buildPrompt(repoData);
+      returnPayload = {
+        type: 'repo',
+        repo: {
+          name: repoData.name,
+          fullName: repoData.fullName,
+          description: repoData.description,
+          stars: repoData.stars,
+          forks: repoData.forks,
+          openIssues: repoData.openIssues,
+          primaryLanguage: repoData.primaryLanguage,
+          languages: repoData.languages,
+          daysSinceCommit: repoData.daysSinceCommit,
+          lastCommit: repoData.recentCommits[0]?.date || null,
+          license: repoData.license,
+          topics: repoData.topics,
+        },
+      };
     }
 
     // Call Claude — 400 tokens max, keep it punchy not a dissertation
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 400,
-      system: `Savage funny code reviewer. Roast the repo. Be brutal and specific, never mean-spirited.
+      system: `Savage funny code reviewer. Roast the ${parsed.type === 'profile' ? 'GitHub developer' : 'repo'}. Be brutal and specific, never mean-spirited.
 Respond ONLY in raw JSON (no markdown):
 {"score":4.2,"scoreLabel":"CRIES IN JAVASCRIPT","roastLines":["line1","line2","line3"],"redeemingQuality":"...","worstOffense":"..."}
 Score: 1-3 catastrophic, 4-5 concerning, 6-7 mediocre, 8-9 decent, 10 perfect (be suspicious).
 Keep each roastLine under 15 words. Max 3 lines.`,
-      messages: [
-        { role: 'user', content: buildPrompt(repoData) }
-      ],
+      messages: [{ role: 'user', content: prompt }],
     });
 
     // Parse Claude's response
@@ -193,28 +281,14 @@ Keep each roastLine under 15 words. Max 3 lines.`,
       return res.status(500).json({ error: "Our roaster broke. Probably JavaScript's fault." });
     }
 
-    // Return roast + repo stats
-    return res.json({
-      roast: roastData,
-      repo: {
-        name: repoData.name,
-        fullName: repoData.fullName,
-        description: repoData.description,
-        stars: repoData.stars,
-        forks: repoData.forks,
-        openIssues: repoData.openIssues,
-        primaryLanguage: repoData.primaryLanguage,
-        languages: repoData.languages,
-        daysSinceCommit: repoData.daysSinceCommit,
-        lastCommit: repoData.recentCommits[0]?.date || null,
-        license: repoData.license,
-        topics: repoData.topics,
-      }
-    });
+    return res.json({ roast: roastData, ...returnPayload });
 
   } catch (err) {
     if (err.message === 'REPO_NOT_FOUND') {
       return res.status(404).json({ error: "Repo not found. Maybe it's as invisible as your commit history." });
+    }
+    if (err.message === 'USER_NOT_FOUND') {
+      return res.status(404).json({ error: "User not found. Ghost account? Respect." });
     }
     if (err.message === 'RATE_LIMITED') {
       return res.status(429).json({ error: 'GitHub rate limited us. Slow down. Even bad code needs a break.' });

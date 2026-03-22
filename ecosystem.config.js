@@ -4,7 +4,7 @@ module.exports = {
     script: 'server.js',
     env: {
       NODE_ENV: 'production',
-      PORT: 3002
+      PORT: 3003
     },
     error_file: './logs/err.log',
     out_file: './logs/out.log',

@@ -456,13 +456,13 @@
   <section class="hero">
     <div class="hero-badge">🔥 <span>AI-powered</span> code destruction</div>
     <h1>Your repo deserves<br>to be <em>roasted.</em></h1>
-    <p>Paste a GitHub link. Get destroyed. Feel things.</p>
+    <p>Paste a GitHub repo or profile link. Get destroyed. Feel things.</p>
 
     <div class="input-card">
       <input
         id="repo-url"
         type="text"
-        placeholder="https://github.com/you/your-regret"
+        placeholder="github.com/you/repo  or  github.com/you"
         autocomplete="off"
         spellcheck="false"
       />
@@ -568,6 +568,16 @@
     "Evaluating your life choices...",
     "Calculating the damage...",
   ];
+  const profileMsgs = [
+    "Stalking your GitHub profile...",
+    "Counting your abandoned repos...",
+    "Judging your follower ratio...",
+    "Reading your cringy bio...",
+    "Assessing your commit frequency...",
+    "Calculating years of skill issue...",
+    "Evaluating your life choices...",
+    "Preparing the roast...",
+  ];
 
   document.getElementById('repo-url').addEventListener('keydown', e => {
     if (e.key === 'Enter') startRoast();
@@ -578,7 +588,9 @@
     if (!url) return;
     hide('result'); hide('error-box'); show('loading');
     document.getElementById('roast-btn').disabled = true;
-    startMsgs();
+    // Detect profile vs repo to pick right loading messages
+    const isProfile = /github\.com[/:]([^/\s?#]+)$/.test(url.replace(/\/$/, ''));
+    startMsgs(isProfile ? profileMsgs : msgs);
 
     fetch('/api/roast', {
       method: 'POST',
@@ -586,25 +598,49 @@
       body: JSON.stringify({ repoUrl: url }),
     })
     .then(async r => { const d = await r.json(); if (!r.ok) throw new Error(d.error); return d; })
-    .then(d => { stopMsgs(); currentRoast = d.roast; currentRepo = d.repo; render(d); saveShame(d); renderShame(); })
+    .then(d => { stopMsgs(); currentRoast = d.roast; currentRepo = d.repo || d.profile; render(d); saveShame(d); renderShame(); })
     .catch(e => { stopMsgs(); showError(e.message || "Our roaster broke. Probably JavaScript's fault."); })
     .finally(() => { hide('loading'); document.getElementById('roast-btn').disabled = false; });
   }
 
-  function render({ roast, repo }) {
-    const last = repo.daysSinceCommit != null ? `${repo.daysSinceCommit}d ago` : '?';
-    document.getElementById('repo-stats').innerHTML = `
-      <div>
-        <div class="repo-name">${esc(repo.fullName)}</div>
-        ${repo.description ? `<div class="repo-desc">${esc(repo.description)}</div>` : ''}
-      </div>
-      <div class="pills">
-        <span class="pill">⭐ <b>${repo.stars}</b></span>
-        <span class="pill">🍴 <b>${repo.forks}</b></span>
-        <span class="pill">🐛 <b>${repo.openIssues}</b> issues</span>
-        <span class="pill">💻 <b>${esc(repo.primaryLanguage||'?')}</b></span>
-        <span class="pill">🕐 <b>${last}</b></span>
-      </div>`;
+  function render(d) {
+    const { roast } = d;
+    const isProfile = d.type === 'profile';
+
+    if (isProfile) {
+      const p = d.profile;
+      const langStr = p.languages.slice(0,4).join(', ') || '?';
+      document.getElementById('repo-stats').innerHTML = `
+        <div>
+          <div class="repo-name">👤 ${esc(p.username)}</div>
+          ${p.bio && p.bio !== 'No bio. Classic.' ? `<div class="repo-desc">${esc(p.bio)}</div>` : '<div class="repo-desc">No bio. Classic.</div>'}
+        </div>
+        <div class="pills">
+          <span class="pill">👥 <b>${p.followers}</b> followers</span>
+          <span class="pill">➡️ <b>${p.following}</b> following</span>
+          <span class="pill">📦 <b>${p.publicRepos}</b> repos</span>
+          <span class="pill">⭐ <b>${p.totalStars}</b> stars</span>
+          <span class="pill">🕰 <b>${p.accountAgeYears}yr</b> old</span>
+          ${langStr !== '?' ? `<span class="pill">💻 <b>${esc(langStr)}</b></span>` : ''}
+        </div>`;
+      document.getElementById('card-repo').textContent = p.username;
+    } else {
+      const repo = d.repo;
+      const last = repo.daysSinceCommit != null ? `${repo.daysSinceCommit}d ago` : '?';
+      document.getElementById('repo-stats').innerHTML = `
+        <div>
+          <div class="repo-name">${esc(repo.fullName)}</div>
+          ${repo.description ? `<div class="repo-desc">${esc(repo.description)}</div>` : ''}
+        </div>
+        <div class="pills">
+          <span class="pill">⭐ <b>${repo.stars}</b></span>
+          <span class="pill">🍴 <b>${repo.forks}</b></span>
+          <span class="pill">🐛 <b>${repo.openIssues}</b> issues</span>
+          <span class="pill">💻 <b>${esc(repo.primaryLanguage||'?')}</b></span>
+          <span class="pill">🕐 <b>${last}</b></span>
+        </div>`;
+      document.getElementById('card-repo').textContent = repo.fullName;
+    }
 
     document.getElementById('score-num').textContent   = roast.score.toFixed(1) + ' / 10';
     document.getElementById('score-label').textContent = roast.scoreLabel || '';
@@ -621,13 +657,13 @@
     document.getElementById('worst-offense').textContent = roast.worstOffense || '';
     document.getElementById('redeeming').textContent     = roast.redeemingQuality || '';
 
-    const tweet = encodeURIComponent(`my repo got roasted 🔥\n"${roast.worstOffense}" — ${roast.score}/10 ${roast.scoreLabel}\nroast.oliverprojects.tech`);
+    const tweetSubject = isProfile ? `my GitHub profile` : `my repo`;
+    const tweet = encodeURIComponent(`${tweetSubject} got roasted 🔥\n"${roast.worstOffense}" — ${roast.score}/10 ${roast.scoreLabel}\nroast.oliverprojects.tech`);
     document.getElementById('tweet-btn').href = `https://twitter.com/intent/tweet?text=${tweet}`;
 
     const badge = `![Roast Score](https://img.shields.io/badge/roast-${encodeURIComponent(roast.score+'/10🔥')}-orange?style=for-the-badge)`;
     document.getElementById('badge-md').textContent = badge;
 
-    document.getElementById('card-repo').textContent = repo.fullName;
     document.getElementById('card-num').textContent  = roast.score.toFixed(1) + '/10';
     document.getElementById('card-lbl').textContent  = roast.scoreLabel || '';
     document.getElementById('card-line').textContent = '"' + (roast.roastLines?.[0] || '') + '"';
@@ -669,9 +705,10 @@
     document.getElementById('repo-url').focus();
   }
 
-  function saveShame({ roast, repo }) {
-    let h = getHall().filter(e => e.repo !== repo.fullName);
-    h.push({ repo: repo.fullName, score: roast.score, worstOffense: roast.worstOffense, roastedAt: new Date().toISOString() });
+  function saveShame({ roast, repo, profile, type }) {
+    const name = type === 'profile' ? `👤 ${profile.username}` : repo.fullName;
+    let h = getHall().filter(e => e.repo !== name);
+    h.push({ repo: name, score: roast.score, worstOffense: roast.worstOffense, roastedAt: new Date().toISOString() });
     if (h.length > 50) h = h.slice(-50);
     localStorage.setItem('roast_hall', JSON.stringify(h));
   }
@@ -695,11 +732,12 @@
   function show(id) { document.getElementById(id).style.display = 'block'; }
   function hide(id) { document.getElementById(id).style.display = 'none'; }
   function showError(msg) { document.getElementById('error-msg').textContent = msg; show('error-box'); }
-  let msgIdx = 0;
-  function startMsgs() {
+  let msgIdx = 0, activeMsgs = msgs;
+  function startMsgs(msgList) {
+    activeMsgs = msgList || msgs;
     msgIdx = 0;
-    document.getElementById('loading-msg').textContent = msgs[0];
-    loadingTimer = setInterval(() => { msgIdx = (msgIdx+1)%msgs.length; document.getElementById('loading-msg').textContent = msgs[msgIdx]; }, 2200);
+    document.getElementById('loading-msg').textContent = activeMsgs[0];
+    loadingTimer = setInterval(() => { msgIdx = (msgIdx+1)%activeMsgs.length; document.getElementById('loading-msg').textContent = activeMsgs[msgIdx]; }, 2200);
   }
   function stopMsgs() { clearInterval(loadingTimer); }
   function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
